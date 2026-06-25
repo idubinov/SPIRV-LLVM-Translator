@@ -290,8 +290,8 @@ void SPIRVEntry::validateValues(const std::vector<SPIRVId> &Ids) const {
 }
 
 void SPIRVEntry::validateBuiltin(SPIRVWord TheSet, SPIRVWord Index) const {
-  assert(TheSet != SPIRVWORD_MAX && Index != SPIRVWORD_MAX &&
-         "Invalid builtin");
+  SPIRVCK(TheSet != SPIRVWORD_MAX && Index != SPIRVWORD_MAX, InvalidModule,
+          "Invalid builtin");
 }
 
 void SPIRVEntry::addDecorate(SPIRVDecorate *Dec) {

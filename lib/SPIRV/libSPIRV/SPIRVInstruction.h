@@ -1133,8 +1133,9 @@ protected:
     }
     assert(isCmpOpCode(OpCode) && "Invalid op code for cmp inst");
     if (OpCode == OpLessOrGreater)
-      assert(this->getModule()->getSPIRVVersion() <= VersionNumber::SPIRV_1_5 &&
-             "OpLessOrGreater is removed starting from SPIR-V 1.6");
+      SPIRVCK(this->getModule()->getSPIRVVersion() <= VersionNumber::SPIRV_1_5,
+              InvalidModule,
+              "OpLessOrGreater is removed starting from SPIR-V 1.6");
     assert((ResTy->isTypeBool() || ResTy->isTypeInt()) &&
            "Invalid type for compare instruction");
     assert(Op1Ty == Op2Ty && "Inconsistent types");
@@ -3079,8 +3080,9 @@ public:
 
   void validate() const override {
     if (OpCode == OpAtomicCompareExchangeWeak)
-      assert(this->getModule()->getSPIRVVersion() < VersionNumber::SPIRV_1_4 &&
-             "OpAtomicCompareExchangeWeak is removed starting from SPIR-V 1.4");
+      SPIRVCK(this->getModule()->getSPIRVVersion() < VersionNumber::SPIRV_1_4,
+              InvalidModule,
+              "OpAtomicCompareExchangeWeak is removed starting from SPIR-V 1.4");
   }
 
   // This method is needed for correct translation of atomic instructions when

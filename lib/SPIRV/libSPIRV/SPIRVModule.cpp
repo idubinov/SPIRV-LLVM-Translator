@@ -946,10 +946,12 @@ SPIRVEntry *SPIRVModuleImpl::addEntry(SPIRVEntry *Entry) {
     }
   }
   if (ValidateCapability) {
-    assert(none_of(
-        Entry->getRequiredCapability().begin(),
-        Entry->getRequiredCapability().end(),
-        [this](SPIRVCapabilityKind &val) { return !CapMap.count(val); }));
+    SPIRVCK(none_of(Entry->getRequiredCapability().begin(),
+                    Entry->getRequiredCapability().end(),
+                    [this](SPIRVCapabilityKind &val) {
+                      return !CapMap.count(val);
+                    }),
+            InvalidModule, "Required capability is not declared in the module");
   }
   if (AutoAddExtensions) {
     // While we are reading existing SPIR-V we need to read it as-is and don't

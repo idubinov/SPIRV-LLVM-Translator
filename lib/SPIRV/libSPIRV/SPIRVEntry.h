@@ -774,7 +774,6 @@ public:
   void addExecutionMode(SPIRVExecutionMode *ExecMode) {
     // There should not be more than 1 execution mode kind except the ones
     // mentioned in SPV_KHR_float_controls and SPV_INTEL_float_controls2.
-#ifndef NDEBUG
     auto IsDenorm = [](auto EMK) {
       return EMK == ExecutionModeDenormPreserve ||
              EMK == ExecutionModeDenormFlushToZero;
@@ -821,10 +820,11 @@ public:
              !(IsMaxRegisters(EMK0) && IsMaxRegisters(EMK1));
     };
     for (auto I = ExecModes.begin(); I != ExecModes.end(); ++I) {
-      assert(IsCompatible(ExecMode, (*I).second) &&
-             "Found incompatible execution modes");
+      ExecMode->getErrorLog().checkError(
+          IsCompatible(ExecMode, (*I).second), SPIRVEC_InvalidModule,
+          "Found incompatible execution modes",
+          "IsCompatible(ExecMode, (*I).second)");
     }
-#endif // !NDEBUG
     SPIRVExecutionModeKind EMK = ExecMode->getExecutionMode();
     ExecModes.emplace(EMK, ExecMode);
   }
