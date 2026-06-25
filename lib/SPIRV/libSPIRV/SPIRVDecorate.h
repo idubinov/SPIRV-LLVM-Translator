@@ -424,7 +424,7 @@ public:
 protected:
   SPIRVDecorateVec Decorations;
   void validate() const override {
-    assert(OpCode == OC);
+    SPIRVCK(OpCode == OC, InvalidInstruction, "Unexpected op code");
     assert(WordCount == WC);
   }
 };

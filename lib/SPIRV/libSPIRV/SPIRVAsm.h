@@ -47,7 +47,7 @@ protected:
   void validate() const override {
     SPIRVEntry::validate();
     assert(WordCount > FixedWC);
-    assert(OpCode == OC);
+    SPIRVCK(OpCode == OC, InvalidInstruction, "Unexpected op code");
   }
   _SPIRV_DEF_ENCDEC2(Id, Target)
   std::string Target;
@@ -87,7 +87,7 @@ protected:
   void validate() const override {
     SPIRVValue::validate();
     assert(WordCount > FixedWC);
-    assert(OpCode == OC);
+    SPIRVCK(OpCode == OC, InvalidInstruction, "Unexpected op code");
   }
   SPIRVAsmTargetINTEL *Target = nullptr;
   SPIRVTypeFunction *FunctionType = nullptr;
@@ -131,7 +131,7 @@ protected:
   void validate() const override {
     SPIRVInstruction::validate();
     assert(WordCount >= FixedWC);
-    assert(OpCode == OC);
+    SPIRVCK(OpCode == OC, InvalidInstruction, "Unexpected op code");
     assert(getBasicBlock() && "Invalid BB");
     assert(getBasicBlock()->getModule() == Asm->getModule());
   }
