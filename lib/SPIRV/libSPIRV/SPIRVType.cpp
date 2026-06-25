@@ -47,12 +47,14 @@
 namespace SPIRV {
 
 SPIRVType *SPIRVType::getArrayElementType() const {
-  assert(OpCode == OpTypeArray && "Not array type");
+  SPIRVCK(OpCode == OpTypeArray, InvalidInstruction,
+          "getArrayElementType: wrong type tag");
   return static_cast<const SPIRVTypeArray *>(this)->getElementType();
 }
 
 uint64_t SPIRVType::getArrayLength() const {
-  assert(OpCode == OpTypeArray && "Not array type");
+  SPIRVCK(OpCode == OpTypeArray, InvalidInstruction,
+          "getArrayLength: wrong type tag");
   const SPIRVTypeArray *AsArray = static_cast<const SPIRVTypeArray *>(this);
   assert(AsArray->getLength()->getOpCode() == OpConstant &&
          "getArrayLength can only be called with constant array lengths");
@@ -68,49 +70,54 @@ SPIRVWord SPIRVType::getBitWidth() const {
 }
 
 SPIRVWord SPIRVType::getFloatBitWidth() const {
-  assert(OpCode == OpTypeFloat && "Not a float type");
+  SPIRVCK(OpCode == OpTypeFloat, InvalidInstruction,
+          "getFloatBitWidth: wrong type tag");
   return static_cast<const SPIRVTypeFloat *>(this)->getBitWidth();
 }
 
 SPIRVWord SPIRVType::getIntegerBitWidth() const {
-  assert((OpCode == OpTypeInt || OpCode == OpTypeBool) &&
-         "Not an integer type");
+  SPIRVCK(OpCode == OpTypeInt || OpCode == OpTypeBool, InvalidInstruction,
+          "getIntegerBitWidth: wrong type tag");
   if (isTypeBool())
     return 1;
   return static_cast<const SPIRVTypeInt *>(this)->getBitWidth();
 }
 
 SPIRVType *SPIRVType::getFunctionReturnType() const {
-  assert(OpCode == OpTypeFunction);
+  SPIRVCK(OpCode == OpTypeFunction, InvalidInstruction,
+          "getFunctionReturnType: wrong type tag");
   return static_cast<const SPIRVTypeFunction *>(this)->getReturnType();
 }
 
 SPIRVType *SPIRVType::getPointerElementType() const {
-  assert((OpCode == OpTypePointer || OpCode == OpTypeUntypedPointerKHR) &&
-         "Not a pointer type");
+  SPIRVCK(OpCode == OpTypePointer || OpCode == OpTypeUntypedPointerKHR,
+          InvalidInstruction, "getPointerElementType: wrong type tag");
   if (OpCode == OpTypeUntypedPointerKHR)
     return const_cast<SPIRVType *>(this);
   return static_cast<const SPIRVTypePointer *>(this)->getElementType();
 }
 
 SPIRVStorageClassKind SPIRVType::getPointerStorageClass() const {
-  assert((OpCode == OpTypePointer || OpCode == OpTypeUntypedPointerKHR) &&
-         "Not a pointer type");
+  SPIRVCK(OpCode == OpTypePointer || OpCode == OpTypeUntypedPointerKHR,
+          InvalidInstruction, "getPointerStorageClass: wrong type tag");
   return static_cast<const SPIRVTypePointer *>(this)->getStorageClass();
 }
 
 SPIRVType *SPIRVType::getStructMemberType(size_t Index) const {
-  assert(OpCode == OpTypeStruct && "Not struct type");
+  SPIRVCK(OpCode == OpTypeStruct, InvalidInstruction,
+          "getStructMemberType: wrong type tag");
   return static_cast<const SPIRVTypeStruct *>(this)->getMemberType(Index);
 }
 
 SPIRVWord SPIRVType::getStructMemberCount() const {
-  assert(OpCode == OpTypeStruct && "Not struct type");
+  SPIRVCK(OpCode == OpTypeStruct, InvalidInstruction,
+          "getStructMemberCount: wrong type tag");
   return static_cast<const SPIRVTypeStruct *>(this)->getMemberCount();
 }
 
 SPIRVWord SPIRVType::getVectorComponentCount() const {
-  assert(OpCode == OpTypeVector && "Not vector type");
+  SPIRVCK(OpCode == OpTypeVector, InvalidInstruction,
+          "getVectorComponentCount: wrong type tag");
   return static_cast<const SPIRVTypeVector *>(this)->getComponentCount();
 }
 
@@ -126,12 +133,14 @@ SPIRVType *SPIRVType::getVectorComponentType() const {
 }
 
 SPIRVWord SPIRVType::getMatrixColumnCount() const {
-  assert(OpCode == OpTypeMatrix && "Not matrix type");
+  SPIRVCK(OpCode == OpTypeMatrix, InvalidInstruction,
+          "getMatrixColumnCount: wrong type tag");
   return static_cast<const SPIRVTypeMatrix *>(this)->getColumnCount();
 }
 
 SPIRVType *SPIRVType::getMatrixColumnType() const {
-  assert(OpCode == OpTypeMatrix && "Not matrix type");
+  SPIRVCK(OpCode == OpTypeMatrix, InvalidInstruction,
+          "getMatrixColumnType: wrong type tag");
   return static_cast<const SPIRVTypeMatrix *>(this)->getColumnType();
 }
 
