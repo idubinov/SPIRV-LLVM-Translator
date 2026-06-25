@@ -53,7 +53,10 @@ bool evaluateConstant(SPIRVModule *BM, SPIRVId Id, bool &Res,
   auto *BV = BM->getValue(Id);
   const Op OpCode = BV->getOpCode();
 
-  assert(isConstantOpCode(OpCode));
+  if (!isConstantOpCode(OpCode)) {
+    ErrMsg = "Condition operand does not refer to a constant";
+    return false;
+  }
   assert(BV->getType()->getOpCode() == spv::OpTypeBool);
 
   SPIRVWord SpecId = 0;

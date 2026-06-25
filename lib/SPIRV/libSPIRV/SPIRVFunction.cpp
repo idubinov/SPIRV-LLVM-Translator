@@ -116,7 +116,9 @@ void SPIRVFunction::decode(std::istream &I) {
       break;
     }
     default:
-      assert(0 && "Invalid SPIRV format");
+      SPIRVCK(false, InvalidInstruction,
+              "Unexpected opcode in function body");
+      return;
     }
   }
 }

@@ -43,6 +43,7 @@
 #include <ostream>
 #define spv_ostream std::ostream
 
+#include "llvm/Support/ErrorHandling.h"
 #include "llvm/Support/raw_ostream.h"
 
 #include <algorithm>
@@ -98,8 +99,16 @@ public:
   static Ty1 rmap(Ty2 Key) {
     Ty1 Val = {};
     bool Found = rfind(Key, &Val);
-    (void)Found;
-    assert(Found && "Invalid key");
+    // On the text-format decode path an unknown stream value reaches this lookup.
+    // Under -DNDEBUG the assert is compiled out, which would silently return a
+    // value-initialized sentinel and let decoding continue on garbage. Convert
+    // to an unconditional runtime check that fails stop, matching the
+    // translator's default error-handling policy. (SPIRVError.h's SPIRVCK is not
+    // usable here: this is a free-standing template with no getErrorLog() in
+    // scope, and SPIRVError.h includes SPIRVUtil.h, so pulling it in would be
+    // circular.)
+    if (!Found)
+      llvm::report_fatal_error("SPIRVMap::rmap: invalid key");
     return Val;
   }
 

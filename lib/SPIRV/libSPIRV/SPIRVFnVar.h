@@ -323,7 +323,8 @@ public:
         Res = DeviceArchitecture >= Architecture;
         break;
       default:
-        assert(false && "Invalid checked CmpOp");
+        SPIRVCK(false, InvalidInstruction,
+                "Invalid comparison opcode in OpSpecConstantArchitectureINTEL");
         Res = false;
         break;
       }

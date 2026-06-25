@@ -2025,13 +2025,13 @@ public:
   void setExtSetKindById() {
     assert(Module && "Invalid module");
     ExtSetKind = Module->getBuiltinSet(ExtSetId);
-    assert((ExtSetKind == SPIRVEIS_OpenCL || ExtSetKind == SPIRVEIS_Debug ||
-            ExtSetKind == SPIRVEIS_OpenCL_DebugInfo_100 ||
-            ExtSetKind == SPIRVEIS_NonSemantic_Shader_DebugInfo_100 ||
-            ExtSetKind == SPIRVEIS_NonSemantic_Shader_DebugInfo_200 ||
-            ExtSetKind == SPIRVEIS_NonSemantic_AuxData ||
-            ExtSetKind == SPIRVEIS_NonSemantic_Unknown) &&
-           "not supported");
+    SPIRVCK((ExtSetKind == SPIRVEIS_OpenCL || ExtSetKind == SPIRVEIS_Debug ||
+             ExtSetKind == SPIRVEIS_OpenCL_DebugInfo_100 ||
+             ExtSetKind == SPIRVEIS_NonSemantic_Shader_DebugInfo_100 ||
+             ExtSetKind == SPIRVEIS_NonSemantic_Shader_DebugInfo_200 ||
+             ExtSetKind == SPIRVEIS_NonSemantic_AuxData ||
+             ExtSetKind == SPIRVEIS_NonSemantic_Unknown),
+            InvalidInstruction, "Unsupported extended instruction set");
   }
   void encode(spv_ostream &O) const override {
     getEncoder(O) << Type << Id << ExtSetId;
@@ -2077,8 +2077,9 @@ public:
       getDecoder(I) >> ExtOp;
       break;
     default:
-      assert(0 && "not supported");
-      getDecoder(I) >> ExtOp;
+      SPIRVCK(false, InvalidInstruction,
+              "Unsupported extended instruction set");
+      break;
     }
     SPIRVDecoder Decoder = getDecoder(I);
     Decoder >> Args;
@@ -2097,8 +2098,8 @@ public:
     validateBuiltin(ExtSetId, ExtOp);
   }
   bool isOperandLiteral(unsigned Index) const override {
-    assert(ExtSetKind == SPIRVEIS_OpenCL &&
-           "Unsupported extended instruction set");
+    SPIRVCKRT(ExtSetKind == SPIRVEIS_OpenCL, InvalidInstruction,
+              "Unsupported extended instruction set");
     auto EOC = static_cast<OCLExtOpKind>(ExtOp);
     switch (EOC) {
     default:
@@ -2195,7 +2196,9 @@ protected:
     case OpTypeCooperativeMatrixKHR:
       break;
     default:
-      assert(false && "Invalid type");
+      SPIRVCK(false, InvalidInstruction,
+              "OpCompositeConstruct result type is not a valid composite type");
+      break;
     }
   }
   std::vector<SPIRVId> Constituents;
