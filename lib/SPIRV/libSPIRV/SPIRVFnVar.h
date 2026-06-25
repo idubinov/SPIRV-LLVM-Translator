@@ -179,7 +179,8 @@ protected:
   void validate() const override {
     SPIRVInstruction::validate();
     size_t TypeOpCode = this->getType()->getOpCode();
-    assert(TypeOpCode != OpTypeVoid && "Conditional copy type cannot be void");
+    SPIRVCK(TypeOpCode != OpTypeVoid, InvalidInstruction,
+            "Conditional copy type cannot be void");
     (void)(TypeOpCode);
     assert(Constituents.size() % 2 == 0 &&
            "Conditional copy requires condition-operand pairs");

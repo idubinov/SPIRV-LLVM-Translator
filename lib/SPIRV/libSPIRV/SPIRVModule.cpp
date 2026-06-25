@@ -1007,7 +1007,7 @@ SPIRVExtInstSetKind SPIRVModuleImpl::getBuiltinSet(SPIRVId SetId) const {
 
 bool SPIRVModuleImpl::isEntryPoint(SPIRVExecutionModelKind ExecModel,
                                    SPIRVId EP) const {
-  assert(isValid(ExecModel) && "Invalid execution model");
+  SPIRVCK(isValid(ExecModel), InvalidModule, "Invalid execution model");
   assert(EP != SPIRVID_INVALID && "Invalid function id");
   auto Loc = EntryPointSet.find(ExecModel);
   if (Loc == EntryPointSet.end()) {
@@ -1305,7 +1305,7 @@ SPIRVModuleImpl::addDecorate(SPIRVDecorateGeneric *Dec) {
 void SPIRVModuleImpl::addEntryPoint(SPIRVExecutionModelKind ExecModel,
                                     SPIRVId EntryPoint, const std::string &Name,
                                     const std::vector<SPIRVId> &Variables) {
-  assert(isValid(ExecModel) && "Invalid execution model");
+  SPIRVCK(isValid(ExecModel), InvalidModule, "Invalid execution model");
   assert(EntryPoint != SPIRVID_INVALID && "Invalid entry point");
   auto *EP =
       add(new SPIRVEntryPoint(this, ExecModel, EntryPoint, Name, Variables));
@@ -1317,7 +1317,7 @@ void SPIRVModuleImpl::addEntryPoint(SPIRVExecutionModelKind ExecModel,
 void SPIRVModuleImpl::addConditionalEntryPoint(
     SPIRVId Condition, SPIRVExecutionModelKind ExecModel, SPIRVId EntryPoint,
     const std::string &Name, const std::vector<SPIRVId> &Variables) {
-  assert(isValid(ExecModel) && "Invalid execution model");
+  SPIRVCK(isValid(ExecModel), InvalidModule, "Invalid execution model");
   assert(EntryPoint != SPIRVID_INVALID && "Invalid entry point");
   auto *EP = add(new SPIRVConditionalEntryPointINTEL(
       this, Condition, ExecModel, EntryPoint, Name, Variables));

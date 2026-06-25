@@ -516,7 +516,7 @@ public:
 protected:
   void validate() const override {
     SPIRVValue::validate();
-    assert(isValid(StorageClass));
+    SPIRVCK(isValid(StorageClass), InvalidInstruction, "Invalid storage class");
     assert(Initializer.size() == 1 || Initializer.empty());
     assert(getType()->isTypePointer());
   }
@@ -2187,8 +2187,8 @@ protected:
     size_t TypeOpCode = this->getType()->getOpCode();
     switch (TypeOpCode) {
     case OpTypeVector:
-      assert(Constituents.size() > 1 &&
-             "There must be at least two Constituent operands in vector");
+      SPIRVCK(Constituents.size() > 1, InvalidInstruction,
+              "There must be at least two Constituent operands in vector");
       break;
     case OpTypeArray:
     case OpTypeStruct:
@@ -2513,7 +2513,9 @@ protected:
     assert(Type->isTypeVector());
     assert(Type->getVectorComponentType() ==
            getValueType(Vector1)->getVectorComponentType());
-    assert(Ops.size() - 2 == Type->getVectorComponentCount());
+    SPIRVCK(Ops.size() - 2 == Type->getVectorComponentCount(),
+            InvalidInstruction,
+            "Invalid number of OpVectorShuffle components");
   }
 };
 

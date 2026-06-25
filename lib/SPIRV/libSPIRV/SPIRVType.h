@@ -210,15 +210,15 @@ protected:
   _SPIRV_DEF_ENCDEC3(Id, BitWidth, IsSigned)
   void validate() const override {
     SPIRVEntry::validate();
-    assert(((BitWidth == 4 &&
-             Module->isAllowedToUseExtension(ExtensionID::SPV_INTEL_int4)) ||
-            BitWidth == 8 || BitWidth == 16 || BitWidth == 32 ||
-            BitWidth == 64 ||
-            Module->isAllowedToUseExtension(
-                ExtensionID::SPV_INTEL_arbitrary_precision_integers) ||
-            Module->isAllowedToUseExtension(
-                ExtensionID::SPV_ALTERA_arbitrary_precision_integers)) &&
-           "Invalid bit width");
+    SPIRVCK(((BitWidth == 4 &&
+              Module->isAllowedToUseExtension(ExtensionID::SPV_INTEL_int4)) ||
+             BitWidth == 8 || BitWidth == 16 || BitWidth == 32 ||
+             BitWidth == 64 ||
+             Module->isAllowedToUseExtension(
+                 ExtensionID::SPV_INTEL_arbitrary_precision_integers) ||
+             Module->isAllowedToUseExtension(
+                 ExtensionID::SPV_ALTERA_arbitrary_precision_integers)),
+            InvalidBitWidth, "Invalid bit width");
   }
 
 private:
@@ -295,17 +295,17 @@ protected:
 
   void validate() const override {
     SPIRVEntry::validate();
-    assert((BitWidth == 4 || BitWidth == 8 || BitWidth == 16 ||
-            BitWidth == 32 || BitWidth == 64) &&
-           "Invalid bit width");
-    assert(
+    SPIRVCK((BitWidth == 4 || BitWidth == 8 || BitWidth == 16 ||
+             BitWidth == 32 || BitWidth == 64),
+            InvalidBitWidth, "Invalid bit width");
+    SPIRVCK(
         (FloatingPointEncoding == FPEncodingMax ||
          (BitWidth == 16 && FloatingPointEncoding == FPEncodingBFloat16KHR) ||
          (BitWidth == 8 && FloatingPointEncoding == FPEncodingFloat8E4M3EXT) ||
          (BitWidth == 8 && FloatingPointEncoding == FPEncodingFloat8E5M2EXT) ||
          (BitWidth == 4 &&
-          FloatingPointEncoding == internal::FPEncodingFloat4E2M1INTEL)) &&
-        "Invalid floating point encoding");
+          FloatingPointEncoding == internal::FPEncodingFloat4E2M1INTEL)),
+        InvalidInstruction, "Invalid floating point encoding");
   }
 
 private:
@@ -332,7 +332,8 @@ protected:
   _SPIRV_DEF_ENCDEC2(Id, ElemStorageClass)
   void validate() const override {
     SPIRVEntry::validate();
-    assert(isValid(ElemStorageClass));
+    SPIRVCK(isValid(ElemStorageClass), InvalidInstruction,
+            "Invalid storage class");
   }
 
   SPIRVStorageClassKind ElemStorageClass; // Storage Class
@@ -455,13 +456,12 @@ protected:
   void validate() const override {
     SPIRVEntry::validate();
     CompType->validate();
-#ifndef NDEBUG
     if (!(Module->isAllowedToUseExtension(
             ExtensionID::SPV_INTEL_vector_compute))) {
-      assert(CompCount == 2 || CompCount == 3 || CompCount == 4 ||
-             CompCount == 8 || CompCount == 16);
+      SPIRVCK(CompCount == 2 || CompCount == 3 || CompCount == 4 ||
+                  CompCount == 8 || CompCount == 16,
+              InvalidInstruction, "Invalid component count");
     }
-#endif // !NDEBUG
   }
 
 private:
@@ -500,7 +500,7 @@ public:
   void validate() const override {
     SPIRVEntry::validate();
     ColType->validate();
-    assert(ColCount >= 2);
+    SPIRVCK(ColCount >= 2, InvalidInstruction, "Invalid column count");
   }
 
 protected:
@@ -663,12 +663,13 @@ protected:
     assert(OpCode == OC);
     assert(WordCount == FixedWC + Acc.size());
     assert(SampledType != SPIRVID_INVALID && "Invalid sampled type");
-    assert(Desc.Dim <= 5);
-    assert(Desc.Depth <= 2);
-    assert(Desc.Arrayed <= 1);
-    assert(Desc.MS <= 1);
-    assert(Desc.Sampled <= 2);
-    assert(Desc.Format <= ImageFormatR64i);
+    SPIRVCK(Desc.Dim <= 5, InvalidInstruction, "Invalid image dimension");
+    SPIRVCK(Desc.Depth <= 2, InvalidInstruction, "Invalid image depth");
+    SPIRVCK(Desc.Arrayed <= 1, InvalidInstruction, "Invalid image arrayed");
+    SPIRVCK(Desc.MS <= 1, InvalidInstruction, "Invalid image MS");
+    SPIRVCK(Desc.Sampled <= 2, InvalidInstruction, "Invalid image sampled");
+    SPIRVCK(Desc.Format <= ImageFormatR64i, InvalidInstruction,
+            "Invalid image format");
     assert(Acc.size() <= 1);
   }
   void setWordCount(SPIRVWord TheWC) override {

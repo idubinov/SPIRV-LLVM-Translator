@@ -54,8 +54,8 @@ SPIRVType *SPIRVType::getArrayElementType() const {
 uint64_t SPIRVType::getArrayLength() const {
   assert(OpCode == OpTypeArray && "Not array type");
   const SPIRVTypeArray *AsArray = static_cast<const SPIRVTypeArray *>(this);
-  assert(AsArray->getLength()->getOpCode() == OpConstant &&
-         "getArrayLength can only be called with constant array lengths");
+  SPIRVCK(AsArray->getLength()->getOpCode() == OpConstant, InvalidInstruction,
+          "getArrayLength can only be called with constant array lengths");
   return static_cast<SPIRVConstant *>(AsArray->getLength())->getZExtIntValue();
 }
 
@@ -301,7 +301,8 @@ void SPIRVTypeArray::validate() const {
   SPIRVEntry::validate();
   ElemType->validate();
   assert(getValue(Length)->getType()->isTypeInt());
-  assert(isConstantOpCode(getValue(Length)->getOpCode()));
+  SPIRVCK(isConstantOpCode(getValue(Length)->getOpCode()), InvalidInstruction,
+          "Array length must be a constant");
 }
 
 SPIRVValue *SPIRVTypeArray::getLength() const { return getValue(Length); }

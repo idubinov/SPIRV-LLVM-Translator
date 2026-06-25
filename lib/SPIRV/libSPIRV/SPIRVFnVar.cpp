@@ -54,7 +54,13 @@ bool evaluateConstant(SPIRVModule *BM, SPIRVId Id, bool &Res,
   const Op OpCode = BV->getOpCode();
 
   assert(isConstantOpCode(OpCode));
-  assert(BV->getType()->getOpCode() == spv::OpTypeBool);
+  if (!BM->getErrorLog().checkError(
+          BV->getType()->getOpCode() == spv::OpTypeBool,
+          SPIRVEC_InvalidInstruction, "Constant must be of boolean type",
+          "BV->getType()->getOpCode() == spv::OpTypeBool")) {
+    ErrMsg = "Constant must be of boolean type";
+    return false;
+  }
 
   SPIRVWord SpecId = 0;
   if (BV->hasDecorate(DecorationSpecId, 0, &SpecId)) {

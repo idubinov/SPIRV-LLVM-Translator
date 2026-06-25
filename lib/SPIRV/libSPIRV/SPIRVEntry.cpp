@@ -738,19 +738,21 @@ void SPIRVLine::decode(std::istream &I) {
 }
 
 void SPIRVLine::validate() const {
-  assert(OpCode == OpLine);
+  SPIRVCK(OpCode == OpLine, InvalidInstruction, "Invalid OpLine opcode");
   assert(WordCount == 4);
   assert(get<SPIRVEntry>(FileName)->getOpCode() == OpString);
-  assert(Line != SPIRVWORD_MAX);
-  assert(Column != SPIRVWORD_MAX);
-  assert(!hasId());
+  SPIRVCK(Line != SPIRVWORD_MAX, InvalidInstruction, "Invalid OpLine line");
+  SPIRVCK(Column != SPIRVWORD_MAX, InvalidInstruction, "Invalid OpLine column");
+  SPIRVCK(!hasId(), InvalidInstruction, "OpLine must not have a result id");
 }
 
 void SPIRVMemberName::validate() const {
-  assert(OpCode == OpMemberName);
+  SPIRVCK(OpCode == OpMemberName, InvalidInstruction,
+          "Invalid OpMemberName opcode");
   assert(WordCount == getSizeInWords(Str) + FixedWC);
   assert(get<SPIRVEntry>(Target)->getOpCode() == OpTypeStruct);
-  assert(MemberNumber < get<SPIRVTypeStruct>(Target)->getStructMemberCount());
+  SPIRVCK(MemberNumber < get<SPIRVTypeStruct>(Target)->getStructMemberCount(),
+          InvalidInstruction, "Invalid OpMemberName member number");
 }
 
 SPIRVExtInstImport::SPIRVExtInstImport(SPIRVModule *TheModule, SPIRVId TheId,
@@ -771,7 +773,7 @@ void SPIRVExtInstImport::decode(std::istream &I) {
 
 void SPIRVExtInstImport::validate() const {
   SPIRVEntry::validate();
-  assert(!Str.empty() && "Invalid builtin set");
+  SPIRVCK(!Str.empty(), InvalidInstruction, "Invalid builtin set");
 }
 
 void SPIRVMemoryModel::encode(spv_ostream &O) const {

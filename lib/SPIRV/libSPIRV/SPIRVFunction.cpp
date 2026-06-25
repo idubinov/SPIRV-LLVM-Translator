@@ -61,7 +61,8 @@ void SPIRVFunctionParameter::foreachAttr(
   auto Locs = Decorates.equal_range(DecorationFuncParamAttr);
   for (auto I = Locs.first, E = Locs.second; I != E; ++I) {
     auto Attr = static_cast<SPIRVFuncParamAttrKind>(I->second->getLiteral(0));
-    assert(isValid(Attr));
+    SPIRVCK(isValid(Attr), InvalidInstruction,
+            "Invalid function parameter attribute");
     Func(Attr);
   }
 }
@@ -204,7 +205,8 @@ void SPIRVFunction::foreachReturnValueAttr(
   auto Locs = Decorates.equal_range(DecorationFuncParamAttr);
   for (auto I = Locs.first, E = Locs.second; I != E; ++I) {
     auto Attr = static_cast<SPIRVFuncParamAttrKind>(I->second->getLiteral(0));
-    assert(isValid(Attr));
+    SPIRVCK(isValid(Attr), InvalidInstruction,
+            "Invalid function parameter attribute");
     Func(Attr);
   }
 }
