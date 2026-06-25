@@ -102,6 +102,7 @@ SPIRVInstruction *SPIRVBasicBlock::getVariableInsertionPoint() const {
 }
 
 void SPIRVBasicBlock::setScope(SPIRVEntry *Scope) {
-  assert(Scope && Scope->getOpCode() == OpFunction && "Invalid scope");
+  SPIRVCK(Scope && Scope->getOpCode() == OpFunction, InvalidInstruction,
+          "Invalid scope");
   setParent(static_cast<SPIRVFunction *>(Scope));
 }

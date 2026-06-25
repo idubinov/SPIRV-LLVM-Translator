@@ -354,7 +354,8 @@ void SPIRVEntry::setDebugLine(const std::shared_ptr<const SPIRVExtInst> &DL) {
 }
 
 void SPIRVEntry::addMemberDecorate(SPIRVMemberDecorate *Dec) {
-  assert(canHaveMemberDecorates());
+  SPIRVCK(canHaveMemberDecorates(), InvalidInstruction,
+          "Member decorates allowed only on OpTypeStruct/OpTypeForward");
   MemberDecorates.insert(std::make_pair(
       std::make_pair(Dec->getMemberNumber(), Dec->getDecorateKind()), Dec));
   Module->addDecorate(Dec);

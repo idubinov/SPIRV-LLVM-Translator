@@ -103,7 +103,8 @@ void SPIRVInstruction::setParent(SPIRVBasicBlock *TheBB) {
 }
 
 void SPIRVInstruction::setScope(SPIRVEntry *Scope) {
-  assert(Scope && Scope->getOpCode() == OpLabel && "Invalid scope");
+  SPIRVCK(Scope && Scope->getOpCode() == OpLabel, InvalidInstruction,
+          "Invalid scope");
   setParent(static_cast<SPIRVBasicBlock *>(Scope));
 }
 

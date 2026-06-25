@@ -133,7 +133,9 @@ protected:
     assert(WordCount >= FixedWC);
     assert(OpCode == OC);
     assert(getBasicBlock() && "Invalid BB");
-    assert(getBasicBlock()->getModule() == Asm->getModule());
+    SPIRVCK(getBasicBlock() && Asm &&
+                getBasicBlock()->getModule() == Asm->getModule(),
+            InvalidInstruction, "Inconsistent module for OpAsmCallINTEL");
   }
   SPIRVAsmINTEL *Asm = nullptr;
   std::vector<SPIRVWord> Args;

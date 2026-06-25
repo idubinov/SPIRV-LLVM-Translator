@@ -111,8 +111,9 @@ public:
 
   void setType(SPIRVType *Ty) {
     Type = Ty;
-    assert(!Ty || !Ty->isTypeVoid() || OpCode == OpFunction ||
-           OpCode == internal::OpTaskSequenceGetINTEL);
+    SPIRVCK(!Ty || !Ty->isTypeVoid() || OpCode == OpFunction ||
+                OpCode == internal::OpTaskSequenceGetINTEL,
+            InvalidInstruction, "Invalid void type for value");
     if (Ty && (!Ty->isTypeVoid() || OpCode == OpFunction ||
                OpCode == internal::OpTaskSequenceGetINTEL))
       setHasType();

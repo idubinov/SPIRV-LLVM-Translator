@@ -55,8 +55,8 @@ void SPIRVValue::setAlignment(SPIRVWord A) {
   if (hasAlignment(&PrevAlignment)) {
     // Do nothing if the Id already has an Alignment decoration, provided
     // it matches the new alignment.
-    assert(A == PrevAlignment &&
-           "New alignment does not match existing alignment");
+    SPIRVCK(A == PrevAlignment, InvalidInstruction,
+            "New alignment does not match existing alignment");
     return;
   }
   addDecorate(new SPIRVDecorate(DecorationAlignment, this, A));
